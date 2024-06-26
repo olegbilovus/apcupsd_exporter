@@ -1,15 +1,16 @@
 version: "3.3"
 services:
   apcupsd_exporter:
+    image: apcupsd-exporter
     container_name: apcupsd_exporter
+    restart: always
+    command: -apcupsd.addr apcupsd:3551;
     stdin_open: true
     tty: true
     networks:
       - apcupsd
 #    ports:
 #      - 9162:9162
-    image: apcupsd-exporter
-    command: -apcupsd.addr apcupsd:3551;
 networks:
   apcupsd:
     external: true
