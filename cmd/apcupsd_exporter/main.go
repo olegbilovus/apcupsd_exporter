@@ -19,6 +19,8 @@ var (
 
 	apcupsdAddr    = flag.String("apcupsd.addr", ":3551", "address of apcupsd Network Information Server (NIS)")
 	apcupsdNetwork = flag.String("apcupsd.network", "tcp", `network of apcupsd Network Information Server (NIS): typically "tcp", "tcp4", or "tcp6"`)
+
+	goMetrics = flag.Bool("go.metrics", false, "Export also the Open Metrics")
 )
 
 func main() {
@@ -30,9 +32,21 @@ func main() {
 
 	fn := newClient(*apcupsdNetwork, *apcupsdAddr)
 
-	prometheus.MustRegister(apcupsdexporter.New(fn))
+	var handler http.Handler
+	if *goMetrics == false {
+		promReg := prometheus.NewRegistry()
+		promReg.MustRegister(apcupsdexporter.New(fn))
+		handler = promhttp.HandlerFor(
+        		promReg,
+		        promhttp.HandlerOpts{
+	        		EnableOpenMetrics: false,
+        		})
+	} else {
+		handler = promhttp.Handler()
+		prometheus.MustRegister(apcupsdexporter.New(fn))
+	}
 
-	http.Handle(*metricsPath, promhttp.Handler())
+	http.Handle(*metricsPath, handler)
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, *metricsPath, http.StatusMovedPermanently)
 	})
@@ -43,6 +57,7 @@ func main() {
 	if err := http.ListenAndServe(*telemetryAddr, nil); err != nil {
 		log.Fatalf("cannot start apcupsd exporter: %s", err)
 	}
+
 }
 
 func newClient(network, addr string) apcupsdexporter.ClientFunc {

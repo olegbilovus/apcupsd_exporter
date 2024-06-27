@@ -15,6 +15,8 @@ Usage of ./apcupsd_exporter:
         address of apcupsd Network Information Server (NIS) (default ":3551")
   -apcupsd.network string
         network of apcupsd Network Information Server (NIS): typically "tcp", "tcp4", or "tcp6" (default "tcp")
+  -go.metrics
+        Export also the Open Metrics
   -telemetry.addr string
         address for apcupsd exporter (default ":9162")
   -telemetry.path string
