@@ -3,7 +3,6 @@ WORKDIR /src
 COPY . .
 
 RUN go mod download
-RUN go build
 
 WORKDIR /src/cmd/apcupsd_exporter
 RUN go build
