@@ -33,7 +33,7 @@ func main() {
 	fn := newClient(*apcupsdNetwork, *apcupsdAddr)
 
 	var handler http.Handler
-	if *goMetrics == false {
+	if !*goMetrics {
 		promReg := prometheus.NewRegistry()
 		promReg.MustRegister(apcupsdexporter.New(fn))
 		handler = promhttp.HandlerFor(
