@@ -8,7 +8,7 @@ WORKDIR /src/cmd/apcupsd_exporter
 RUN go build
 
 # Run stage
-FROM alpine
+FROM alpine:latest
 
 WORKDIR /app
 COPY --from=build-env /src/cmd/apcupsd_exporter/apcupsd_exporter /app/apcupsd_exporter
