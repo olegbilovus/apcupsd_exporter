@@ -1,18 +1,19 @@
-FROM golang:alpine AS build-env
-WORKDIR /src
-COPY . .
-
-RUN go mod download
-
-WORKDIR /src/cmd/apcupsd_exporter
-RUN go build
-
-# Run stage
-FROM alpine:latest
+FROM golang:1.24-alpine AS build-env
 
 WORKDIR /app
-COPY --from=build-env /src/cmd/apcupsd_exporter/apcupsd_exporter /app/apcupsd_exporter
+
+COPY go.mod go.sum ./
+RUN go mod download
+
+COPY . .
+RUN go build -o app
+
+# Run stage
+FROM scratch
+
+WORKDIR /app
+COPY --from=build-env /app/app /app/app
 
 EXPOSE 9162
-ENTRYPOINT [ "./apcupsd_exporter" ]
+ENTRYPOINT [ "./app" ]
 

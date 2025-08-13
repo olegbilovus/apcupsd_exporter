@@ -1,1 +1,11 @@
 Dockerfile
+
+.github/
+
+.idea/
+
+.env
+
+LICENSE.md
+
+README.md
